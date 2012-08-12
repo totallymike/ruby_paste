@@ -56,11 +56,4 @@ Cuba.define do
       res.write haml("index")
     end
   end
-
-  on post do
-    on root do
-      res.write req.params['paste'].to_s
-    end
-  end
-
 end
