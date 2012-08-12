@@ -17,5 +17,11 @@ tmp
 _yardoc
 doc/
 
+# Sass template engine stuff.
+.sass-cache
+
 # Heroku stuff
 Procfile
+
+# Private settings
+lib/settings.rb
