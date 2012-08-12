@@ -7,12 +7,12 @@ scope do
     get "/"
     assert last_response.body["curl"]
   end
-  test "DefaultShouldNotServeIndex" do
-    get "/js/test.js"
-    assert_equal nil, last_response.body["curl"]
+  test "CSS" do
+    get "css/style.css"
+    assert last_response.body["Boilerplate"]
   end
   test "Settings" do
-    assert_equal "localhost", Cuba.settings[:couch][:url]
+    assert_equal "localhost", Cuba.settings[:couch][:server]
   end
 end
 
