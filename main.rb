@@ -6,7 +6,7 @@ require "cuba/render"
 
 # Allow for an optional settings file.
 begin
-  require "lib/settings"
+  require "./lib/settings"
 rescue LoadError
   Cuba.settings[:couch] = "http://localhost:5984/default"
 end
@@ -59,12 +59,12 @@ Cuba.define do
   on post do
     on "", param("paste") do |paste|
       response = $db.save_doc({
-        :id  => generate_id,
-        :doc => paste,
+        '_id'  => generate_id,
+        :body => paste,
         :timestamp => DateTime.now.to_s
       })
 
-      res.write "http://#{req.host}/#{response.id}"
+      res.write "http://#{req.host}/#{response['id']}"
     end
   end
 
