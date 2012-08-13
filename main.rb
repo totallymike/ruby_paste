@@ -9,32 +9,11 @@ rescue LoadError
   Cuba.settings[:couch] = { :server => 'localhost', :port => 5984 }
 end
 
-Cuba.use Rack::Session::Cookie
+Cuba.settings[:render] = {}
+Cuba.settings[:render][:template_engine] = "haml"
 Cuba.plugin Cuba::Render
 
 Cuba.define do
-  # These functions are stolen straight from
-  # https://github.com/antirez/redis-io/blob/master/app.rb
-  def render(path, locals = {})
-    options = {
-      :format => :html5
-    }
-
-    super(path, locals, options)
-  end
-
-  def haml(template, locals = {})
-    layout(partial(template, locals))
-  end
-
-  def partial(template, locals = {})
-    render("views/#{template}.haml", locals)
-  end
-
-  def layout(content)
-    partial("layout", content: content)
-  end
-
   on get do
     on "css", extension("css") do |file|
       res.headers["Content-Type"] = "text/css; charset=utf-8"
@@ -53,7 +32,7 @@ Cuba.define do
     end
 
     on root do
-      res.write haml("index")
+      res.write view("index")
     end
   end
 end
