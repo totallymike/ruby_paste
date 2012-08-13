@@ -1,6 +1,6 @@
 $:.unshift(File.expand_path("..", File.dirname(__FILE__)))
-require "main"
 require "cuba/test"
+require "main"
 
 scope do
   test "Homepage" do
@@ -20,7 +20,6 @@ scope do
     assert last_response.body["Modernizr"]
   end
   test "Settings" do
-    assert_equal "localhost", Cuba.settings[:couch][:server]
+    assert_equal "http://localhost:5984/default", Cuba.settings[:couch]
   end
 end
-
