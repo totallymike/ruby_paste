@@ -1,4 +1,6 @@
 require "sass"
+require 'date'
+require 'couchrest'
 require "cuba"
 require "cuba/render"
 
@@ -6,12 +8,30 @@ require "cuba/render"
 begin
   require "lib/settings"
 rescue LoadError
-  Cuba.settings[:couch] = { :server => 'localhost', :port => 5984 }
+  Cuba.settings[:couch] = "http://localhost:5984/default"
 end
 
 Cuba.settings[:render] = {}
 Cuba.settings[:render][:template_engine] = "haml"
 Cuba.plugin Cuba::Render
+
+$db = CouchRest.database(Cuba.settings[:couch])
+
+# Possible characters for random ID generation
+$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+
+module Kernel
+private
+  def generate_id
+    paste_id = ''
+    8.times do
+      paste_id += $chars[rand($chars.length)]
+    end
+
+    paste_id
+  end
+end
+
 
 Cuba.define do
   on get do
@@ -35,4 +55,18 @@ Cuba.define do
       res.write view("index")
     end
   end
+
+  on post do
+    on "", param("paste") do |paste|
+      response = $db.save_doc({
+        :id  => generate_id,
+        :doc => paste,
+        :timestamp => DateTime.now.to_s
+      })
+
+      res.write "http://#{req.host}/#{response.id}"
+    end
+  end
+
+
 end
