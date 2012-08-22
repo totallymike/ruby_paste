@@ -30,7 +30,10 @@ Cuba.define do
 
     on 'paste/:paste_id' do |id|
       paste = Paste.get(id)
-      res.write view("paste", paste: paste)
+      unless paste.nil?
+        res.write view('paste', paste: paste)
+      else
+        res.write view('error', message: 'not found')
     end
 
     on root do
