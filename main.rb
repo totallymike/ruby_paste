@@ -10,22 +10,6 @@ Cuba.settings[:render] = {}
 Cuba.settings[:render][:template_engine] = "haml"
 Cuba.plugin Cuba::Render
 
-# Possible characters for random ID generation
-$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
-
-module Kernel
-private
-  def generate_id
-    paste_id = ''
-    8.times do
-      paste_id += $chars[rand($chars.length)]
-    end
-
-    paste_id
-  end
-end
-
-
 Cuba.define do
   on get do
     on "css", extension("css") do |file|
@@ -56,16 +40,12 @@ Cuba.define do
 
   on post do
     on "", param("paste") do |paste|
-      new_paste = Paste.new(:body => paste, :created_at => DateTime.now) do |doc|
-        # Might be a better way to manually assign document id.
-        # Will look into it later.
-        doc.id = generate_id
-      end
+      new_paste = Paste.new(:body => paste)
       begin
         new_paste.save
         res.write "http://#{req.host}/paste/#{new_paste.id}"
       rescue Exception
-        res.write "Failure!"
+        res.write "Failed to create paste document."
       end
 
 
