@@ -4,18 +4,11 @@ require 'couchrest'
 require "cuba"
 require "cuba/render"
 
-# Allow for an optional settings file.
-begin
-  require "./lib/settings"
-rescue LoadError
-  Cuba.settings[:couch] = "http://localhost:5984/default"
-end
+require File.join(File.dirname(__FILE__),'lib', 'models', 'paste')
 
 Cuba.settings[:render] = {}
 Cuba.settings[:render][:template_engine] = "haml"
 Cuba.plugin Cuba::Render
-
-$db = CouchRest.database(Cuba.settings[:couch])
 
 # Possible characters for random ID generation
 $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
@@ -58,10 +51,10 @@ Cuba.define do
 
   on post do
     on "", param("paste") do |paste|
-      response = $db.save_doc({
+      response = Paste.create({
         '_id'  => generate_id,
         :body => paste,
-        :timestamp => DateTime.now.to_s
+        :created_at => DateTime.now
       })
 
       res.write "http://#{req.host}/#{response['id']}"
