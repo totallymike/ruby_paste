@@ -46,7 +46,7 @@ Cuba.define do
 
     on 'paste/:paste_id' do |id|
       paste = Paste.get(id)
-      res.write view("paste")
+      res.write view("paste", paste: paste)
     end
 
     on root do
