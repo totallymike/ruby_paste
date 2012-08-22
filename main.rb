@@ -51,13 +51,19 @@ Cuba.define do
 
   on post do
     on "", param("paste") do |paste|
-      response = Paste.create({
-        '_id'  => generate_id,
-        :body => paste,
-        :created_at => DateTime.now
-      })
+      new_paste = Paste.new(:body => paste, :created_at => DateTime.now) do |doc|
+        # Might be a better way to manually assign document id.
+        # Will look into it later.
+        doc.id = generate_id
+      end
+      begin
+        new_paste.save
+        res.write "http://#{req.host}/#{new_paste.id}"
+      rescue Exception
+        res.write "Failure!"
+      end
 
-      res.write "http://#{req.host}/#{response['id']}"
+
     end
   end
 
