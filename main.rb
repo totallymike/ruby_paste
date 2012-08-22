@@ -44,6 +44,11 @@ Cuba.define do
       end
     end
 
+    on 'paste/:paste_id' do |id|
+      paste = Paste.get(id)
+      res.write view("paste")
+    end
+
     on root do
       res.write view("index")
     end
@@ -58,7 +63,7 @@ Cuba.define do
       end
       begin
         new_paste.save
-        res.write "http://#{req.host}/#{new_paste.id}"
+        res.write "http://#{req.host}/paste/#{new_paste.id}"
       rescue Exception
         res.write "Failure!"
       end
